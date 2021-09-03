@@ -1,12 +1,8 @@
-FROM node:14
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 
-WORKDIR /usr/src/app
+COPY ./app /app
 
-COPY app .
+WORKDIR /app
 
-RUN npm i
-
-EXPOSE 8080
-
-CMD ["node","server.js"]
+RUN pip install -r requirements.txt
 
