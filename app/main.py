@@ -45,7 +45,9 @@ def read_root():
 def get_exclusion(advertiser_campaigns:str,publisher:int):
     campaigns = [int(i) for i in advertiser_campaigns.split(",")]
     conn = get_db_conn()
-    logger.error(advertiser_campaigns,publisher)
+    logger.error(advertiser_campaigns)
+    logger.error(publisher)
+
     with conn.cursor(pymysql.cursors.DictCursor) as cursor:
         query = """SELECT c.id
         FROM publisher_exclusions e
@@ -56,9 +58,11 @@ def get_exclusion(advertiser_campaigns:str,publisher:int):
         cursor.execute(query,(publisher,campaigns))
 
     if (results := cursor.fetchall()):
-        return results
+        flt = [dct['id'] for dct in results]
+        logger.debug(flt)
+        return list(filter(lambda x: x not in flt, campaigns))
     else:
-        raise HTTPException(status_code=404, detail= f'No se encontraron exclusiones para la el publisher {advertiser_campaigns}') 
+        return campaigns
 
      
 
